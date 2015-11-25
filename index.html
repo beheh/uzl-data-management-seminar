@@ -83,38 +83,38 @@
 					<section>
 						<h2>Hashing</h2>
 						<ul>
-							<li>Abbildung von Eingabewerte auf Ausgabewerte</li>
-							<li>In diesem Kontext <em>keine</em> kryptographischen Hash-Funkionen</li>
-							<li>Kollisionen sind unvermeidlich</li>
-							<li>Hash-Familien: konfigurierbare Konstanten</li>
+							<li class="fragment">Abbildung von Eingabewerte auf Ausgabewerte</li>
+							<li class="fragment">In diesem Kontext <em>keine</em> kryptographischen Hash-Funkionen</li>
+							<li class="fragment">Kollisionen sind unvermeidlich</li>
+							<li class="fragment">Hash-Familien: konfigurierbare Konstanten</li>
 						</ul>
 					</section>
 
 					<section>
 						<h2>Hashtabellen</h2>
-						<pre><code data-trim class="python">bucket_index = hash_funktion(schluessel) % tabellen_groesse</code></pre>
+						<pre class="fragment"><code data-trim class="python">bucket_index = hash_funktion(schluessel) % tabellen_groesse</code></pre>
 						<ul>
-							<li>Hash des Schlüssels zeigt auf einen <em>Bucket</em></li>
-							<li>Kollisionsbehandlung: Verkettung, <em>probing</em> (linear, quadratisch) oder mit mehreren Hashfunktionen</li>
-							<li><em>Füllgrad</em>: prozentuale Befüllung der Hashtabelle</li>
+							<li class="fragment">Hash des Schlüssels zeigt auf einen <em>Bucket</em></li>
+							<li class="fragment">Kollisionsbehandlung: Verkettung, <em>probing</em> (linear, quadratisch) oder mit mehreren Hashfunktionen</li>
+							<li class="fragment"><em>Füllgrad</em>: prozentuale Befüllung der Hashtabelle</li>
 						</ul>
 					</section>
 
 					<section>
 						<h2>Hash-Joins</h2>
 						<ul>
-							<li>Minimierung des gleichzeitigen Speicherbedarfs</li>
-							<li>Partitionierter Hash-Join
+							<li class="fragment">Minimierung des gleichzeitigen Speicherbedarfs</li>
+							<li class="fragment">Partitionierter Hash-Join
 								<ul>
-									<li>Partionierung der äußeren Tabelle</li>
-									<li>Partionierung der inneren Tabelle</li>
-									<li>Für jede Partition:<br>Hashtabelle der inneren Partition erzeugen („<em>build</em>“) und mit den Tupeln der äußeren Partition joinen („<em>probe</em>“)</li>
+									<li class="fragment">Partionierung der äußeren Tabelle</li>
+									<li class="fragment">Partionierung der inneren Tabelle</li>
+									<li class="fragment">Für jede Partition:<br>Hashtabelle der inneren Partition erzeugen („<em>build</em>“) und mit den Tupeln der äußeren Partition joinen („<em>probe</em>“)</li>
 								</ul>
 							</li>
-							<li><strong>Weshalb partionieren wir?</strong> <span><em>Random</em> Access Memory</span><br>
-								=> Ausnutzung der CPU-Caches (bis zu 100x schneller)
+							<li class="fragment"><strong>Weshalb partionieren wir?</strong> <span class="fragment"><em>Random</em> Access Memory<br>
+								 (CPU-Cache ist bis zu 100x schneller)</span>
 							</li>
-							<li>Aber: redundante Speicherzugriffe</li>
+							<li class="fragment">Aber: redundante Speicherzugriffe</li>
 						</ul>
 					</section>
 				</section>
@@ -127,15 +127,15 @@
 					<section>
 						<h2>Übersicht</h2>
 						<ul>
-							<li>Kompakte Datenstruktur für Hashtabellen</li>
-							<li><strong>Grundidee</strong>: Kompression der Tabelle</li>
-							<li>Struktur einer Concise Hash Table (CHT):
+							<li class="fragment">Kompakte Datenstruktur für Hashtabellen</li>
+							<li class="fragment"><strong>Grundidee</strong>: Kompression der Tabelle</li>
+							<li class="fragment">Struktur einer Concise Hash Table (CHT):
 							<ul>
-								<li><strong>Array</strong>: enthält die Schlüssel/Wert-Paare</li>
-								<li><strong>Bitmap</strong>: gibt an, ob Buckets befüllt sind + Präfixe</li>
-								<li><strong>Overflow-Tabelle</strong>: Hashtabelle für Threshold-Overflow, siehe später</li>
+								<li class="fragment"><strong>Array</strong>: enthält die Schlüssel/Wert-Paare</li>
+								<li class="fragment"><strong>Bitmap</strong>: gibt an, ob Buckets befüllt sind + Präfixe</li>
+								<li class="fragment"><strong>Overflow-Tabelle</strong>: Hashtabelle für Threshold-Overflow, siehe später</li>
 							</ul></li>
-							<li><strong>Ziel:</strong> Speichereffizienz (+Bonusfeatures)</li>
+							<li class="fragment"><strong>Ziel:</strong> Speichereffizienz (+Bonusfeatures)</li>
 						</ul>
 					</section>
 
@@ -147,15 +147,15 @@
 					<section>
 						<h2>Struktur (2)</h2>
 						<ul>
-							<li>Kollisionsbehandlung: linear (mit Threshold)</li>
-							<li>Lesezugriff
+							<li class="fragment">Kollisionsbehandlung: linear (mit Threshold)</li>
+							<li class="fragment">Lesezugriff
 								<ol>
-									<li>Lese von Bitmap und errechne Position</li>
-									<li>Lese von Array ab Position + Threshold</li>
-									<li>Falls nötig (Threshold erreicht): Lese von Overflow-Tabelle</li>
+									<li class="fragment">Lese von Bitmap und errechne Position</li>
+									<li class="fragment">Lese von Array ab Position + Threshold</li>
+									<li class="fragment">Falls nötig (Threshold erreicht): Lese von Overflow-Tabelle</li>
 								</ol>
 							</li>
-							<li>Parallelisierbar: Speicherlatenz ist nur noch ein geringer Faktor<br>
+							<li class="fragment">Parallelisierbar: Speicherlatenz ist nur noch ein geringer Faktor<br>
 							(Fast) nur noch limitiert durch Speicherdurchsatz!</li>
 						</ul>
 					</section>
@@ -163,47 +163,49 @@
 					<section>
 					<h2>Konstruktion</h2>
 						<ul>
-							<li>Parallelisierbar?</li>
-							<li><strong>Herausforderung</strong>: Anzahl der vorher belegten Buckets nicht sofort bekannt</li>
-							<li><strong>Lösung:</strong> Ausnutzung der Bitmap
-								<ol>
-									<li>Direkt Bits auf Bitmap setzen (lineares probing, sonst Overflow-Tabelle)</li>
-									<li>Präfixe berechnen und in Bitmap schreiben</li>
-									<li>erneutes Hashen, Position aus Bitmap lesen und direkt in das Array schreiben</li>
+							<li class="fragment">Parallelisierbar?</li>
+							<li class="fragment"><strong>Herausforderung</strong>: Anzahl der vorher belegten Buckets nicht sofort bekannt</li>
+							<li class="fragment"><strong>Lösung:</strong> Ausnutzung der Bitmap
+								<ol class="fragment">
+									<li class="fragment">Direkt Bits auf Bitmap setzen (lineares probing, sonst Overflow-Tabelle)</li>
+									<li class="fragment">Präfixe berechnen und in Bitmap schreiben</li>
+									<li class="fragment">erneutes Hashen, Position aus Bitmap lesen und direkt in das Array schreiben</li>
 								</ol></li>
-							<li>Schritte können jeweils parallelisiert werden!</li>
+							<li class="fragment">Schritte können jeweils parallelisiert werden!</li>
 						</ul>
 					</section>
 					
 					<section>
 						<h2>Concise Array Tables (CAT)</h2>
 						<ul>
-							<li>Variation von CHTs</li>
+							<li class="fragment">Variation von CHTs</li>
 						</ul>
 
-						<table style="float: left; isplay: inline-block;">
-							<thead>
-								<tr><th>id</th><th>name</th><th>web</th></tr>
-							</thead>
-							<tbody>
-								<tr><td>1</td><td>Git</td><td>git-scm.com</td></tr>
-								<tr><td>2</td><td>Subversion</td><td>subversion.apache.org</td></tr>
-							</tbody>
-						</table>
-						<table style="float:right;">
-							<thead>
-								<tr><th>scm_id</th><th>awesome</th></tr>
-							</thead>
-							<tbody>
-								<tr><td>2</td><td>0</td></tr>
-								<tr><td>1</td><td>1</td></tr>
-							</tbody>
-						</table>
+						<div class="fragment">
+							<table style="float: left; isplay: inline-block;">
+								<thead>
+									<tr><th>id</th><th>name</th><th>web</th></tr>
+								</thead>
+								<tbody>
+									<tr><td>1</td><td>Git</td><td>git-scm.com</td></tr>
+									<tr><td>2</td><td>Subversion</td><td>subversion.apache.org</td></tr>
+								</tbody>
+							</table>
+							<table style="float:right;">
+								<thead>
+									<tr><th>scm_id</th><th>awesome</th></tr>
+								</thead>
+								<tbody>
+									<tr><td>2</td><td>0</td></tr>
+									<tr><td>1</td><td>1</td></tr>
+								</tbody>
+							</table>
+						</div>
 
 						<ul>
-							<li>Join-Schlüssel in der Praxis oft aus gut gefüllten Wertebereich<br>(z.B. <em>auto-increment primary key</em>)</li>
-							<li>Keine Schlüssel mehr im Array nötig</li>
-							<li>Auch bei nur 1% Belegung des Wertebereichs effizient</li>
+							<li class="fragment">Join-Schlüssel in der Praxis oft aus gut gefüllten Wertebereich<br>(z.B. <em>auto-increment primary key</em>)</li>
+							<li class="fragment">Keine Schlüssel mehr im Array nötig</li>
+							<li class="fragment">Auch bei nur 1% Belegung des Wertebereichs effizient</li>
 						</ul>
 					</section>
 				</section>
@@ -216,22 +218,22 @@
 					<section>
 						<h2>Konzept</h2>
 						<ol>
-							<li>Reduktion der äußeren Tabelle</li>
-							<li>CHT/CAT für innere Tabelle</li>
-							<li>Weitere Optimierungen möglich</li>							
+							<li class="fragment">Reduktion der äußeren Tabelle</li>
+							<li class="fragment">CHT/CAT für innere Tabelle</li>
+							<li class="fragment">Weitere Optimierungen möglich</li>							
 						</ol>
 					</section>
 
 					<section>
 						<h2>Optimierungen</h2>
 						<ol>
-							<li>Filterung mittels CHT/CAT als Bloom-Filter
+							<li class="fragment">Filterung mittels CHT/CAT als Bloom-Filter
 								<ul>
 									<li>Äußere Tupel bereits vor dem Join ausschließen</li>
 									<li>Kein Zugriff auf Array nötig</li>
 								</ul>
 							</li>
-							<li>Partionierungs-Pipeline: Jeweils parallelisierbar
+							<li class="fragment">Partionierungs-Pipeline: Jeweils parallelisierbar
 								<ul>
 									<li>Parallele Partitionierung</li>
 									<li>Parallele CHT/CAT-Filterung</li>
@@ -267,10 +269,10 @@
 
 					<section>
 						<h2>Fazit</h2>
-						<ul>
-							<li>Speichereffiziente Alternative für Equi-Joins</li>
-							<li>Vergleichbare Performanz</li>
-							<li>Auch anwendbar bei nichtpartitionierter Probe-Tabelle</li>
+						<ul style="font-size: 1.5em;">
+							<li class="fragment">Speichereffiziente Alternative für Equi-Joins</li>
+							<li class="fragment">Vergleichbare Performanz</li>
+							<li class="fragment">Auch anwendbar bei nichtpartitionierter Probe-Tabelle</li>
 						</ul>
 					</section>
 				</section>
