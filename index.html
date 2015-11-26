@@ -103,19 +103,29 @@
 					<section>
 						<h2>Hash-Joins</h2>
 						<ul>
-							<li class="fragment">Minimierung des gleichzeitigen Speicherbedarfs</li>
+							<li class="fragment">"Normaler" Hash-Join: „build“ + „probe“</li>
 							<li class="fragment">Partitionierter Hash-Join
 								<ul>
 									<li class="fragment">Partionierung der äußeren Tabelle</li>
 									<li class="fragment">Partionierung der inneren Tabelle</li>
-									<li class="fragment">Für jede Partition:<br>Hashtabelle der inneren Partition erzeugen („<em>build</em>“) und mit den Tupeln der äußeren Partition joinen („<em>probe</em>“)</li>
+									<li class="fragment">Für jede Partition: "normaler" Hash-Join</li>
 								</ul>
 							</li>
-							<li class="fragment"><strong>Weshalb partionieren wir?</strong> <span class="fragment"><em>Random</em> Access Memory<br>
-								 (CPU-Cache ist bis zu 100x schneller)</span>
+							<li class="fragment"><strong>Weshalb partionieren wir?</strong> <span class="fragment">RAM vs. CPU-Cache</span>
 							</li>
 							<li class="fragment">Aber: redundante Speicherzugriffe</li>
 						</ul>
+
+						<aside class="notes">
+							- CPU-Cache bis zu 100x schneller<br>
+							- Schreibzugriffe: read outer, write outer to partition, read outer part
+						</aside>
+					</section>
+
+					<section>
+						<h2>Hash-Joins (2)</h2>
+						<img src="partjoin.png" class="stretch"><br>
+						<em>aus MVDB-Skript</em>
 					</section>
 				</section>
 
@@ -133,7 +143,7 @@
 							<ul>
 								<li class="fragment"><strong>Array</strong>: enthält die Schlüssel/Wert-Paare</li>
 								<li class="fragment"><strong>Bitmap</strong>: gibt an, ob Buckets befüllt sind + Präfixe</li>
-								<li class="fragment"><strong>Overflow-Tabelle</strong>: Hashtabelle für Threshold-Overflow, siehe später</li>
+								<li class="fragment"><strong>Overflow-Tabelle</strong>: Hashtabelle für Threshold-Overflow, später mehr</li>
 							</ul></li>
 							<li class="fragment"><strong>Ziel:</strong> Speichereffizienz (+Bonusfeatures)</li>
 						</ul>
@@ -141,32 +151,36 @@
 
 					<section>
 						<h2>Struktur</h2>
-						<img src="cht.png">
+						<img src="cht_inverse.png" class="stretch">
 					</section>
 					
 					<section>
 						<h2>Struktur (2)</h2>
 						<ul>
-							<li class="fragment">Kollisionsbehandlung: linear (mit Threshold)</li>
+							<li>Kollisionsbehandlung: linear (mit Threshold)</li>
 							<li class="fragment">Lesezugriff
 								<ol>
-									<li class="fragment">Lese von Bitmap und errechne Position</li>
-									<li class="fragment">Lese von Array ab Position + Threshold</li>
-									<li class="fragment">Falls nötig (Threshold erreicht): Lese von Overflow-Tabelle</li>
+									<li>Lese von Bitmap und errechne Position</li>
+									<li>Lese von Array ab Position + Threshold</li>
+									<li>Falls nötig (Threshold erreicht): Lese von Overflow-Tabelle</li>
 								</ol>
 							</li>
-							<li class="fragment">Parallelisierbar: Speicherlatenz ist nur noch ein geringer Faktor<br>
-							(Fast) nur noch limitiert durch Speicherdurchsatz!</li>
+							<li class="fragment">Parallelisierbar: Speicherlatenz ist nur noch ein geringer Faktor (DIRA)</li>
 						</ul>
+					</section>
+
+					<section>
+						<h2>Struktur (3)</h2>
+						<img src="cache.png" class="stretch">
 					</section>
 
 					<section>
 					<h2>Konstruktion</h2>
 						<ul>
-							<li class="fragment">Parallelisierbar?</li>
+							<li>Parallelisierbar?</li>
 							<li class="fragment"><strong>Herausforderung</strong>: Anzahl der vorher belegten Buckets nicht sofort bekannt</li>
 							<li class="fragment"><strong>Lösung:</strong> Ausnutzung der Bitmap
-								<ol class="fragment">
+								<ol>
 									<li class="fragment">Direkt Bits auf Bitmap setzen (lineares probing, sonst Overflow-Tabelle)</li>
 									<li class="fragment">Präfixe berechnen und in Bitmap schreiben</li>
 									<li class="fragment">erneutes Hashen, Position aus Bitmap lesen und direkt in das Array schreiben</li>
@@ -225,6 +239,11 @@
 					</section>
 
 					<section>
+						<h2>Konzept (2)</h2>
+						<img src="pipeline.png" class="stretch">
+					</section>
+
+					<section>
 						<h2>Optimierungen</h2>
 						<ol>
 							<li class="fragment">Filterung mittels CHT/CAT als Bloom-Filter
@@ -245,19 +264,19 @@
 
 					<section>
 						<h2>Benchmarks</h2>
-						<h3>Speicherverbrauch</h3>
+						<h3>Speicherverbrauch (gering ist besser)</h3>
 						<img src="varisize.png">
 					</section>
 
 					<section>
 						<h2>Benchmarks (2)</h2>
-						<h3>Geschwindigkeit</h3>
+						<h3>Latenz (gering ist besser)</h3>
 						<img src="varispeed.png">
 					</section>
 
 					<section>
 						<h2>Benchmarks (3)</h2>
-						<h3>Parallelisierung</h3>
+						<h3>Durchsatzrate (hoch ist besser)</h3>
 						<img src="threadcount.png">
 					</section>
 				</section>
